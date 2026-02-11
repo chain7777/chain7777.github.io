@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Product Editor (Ime + Velikost + Cena)</title>
+  <title>Produkt konfigurator</title>
   <style>
     :root { --bg:#0b1020; --panel:#121a33; --text:#e9eeff; --muted:#aab3d6; --border:#263056; }
     * { box-sizing: border-box; }
@@ -47,12 +47,12 @@
 
     .row{ display:grid; gap:10px; }
     .btns{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .btns3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-    hr{ border:none; border-top:1px solid var(--border); margin: 6px 0; }
     .warn{ font-size:12px; color:#ffd36e; }
+    .footnote{ font-size:12px; color:var(--muted); margin-top:8px; }
+    textarea{ min-height: 110px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
-    /* preview */
-    .preview{ border-radius:18px; overflow:hidden; border:1px solid var(--border); min-height:320px; }
+    /* PREVIEW */
+    .preview{ border-radius:18px; overflow:hidden; border:1px solid var(--border); min-height:360px; }
     .previewInner{ padding:18px; display:grid; gap:14px; }
     .chip{
       display:inline-flex; align-items:center; gap:8px;
@@ -63,29 +63,85 @@
       width: fit-content;
     }
 
-    /* “Produkt” kartica v preview */
-    .productCard{
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.16);
-      padding:16px;
-      display:grid;
-      gap:10px;
-      transform-origin: top left;
+    /* Okvir za produkt (da scale-amo celoto) */
+    .productStage{
+      width: 100%;
+      display: grid;
+      place-items: center;
+      padding: 18px 0;
     }
 
-    .namePreview{ margin:0; line-height:1.1; }
-    .pricePreview{ margin:0; opacity:.92; }
-    .meta{ font-size:12px; color: rgba(255,255,255,.75); }
+    /* Ta element se SCALE-a glede na sizeMm */
+    .productScaled{
+      transform-origin: center;
+      will-change: transform;
+    }
 
-    .footnote{ font-size:12px; color:var(--muted); margin-top:8px; }
-    textarea{ min-height: 110px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .productFigure{
+      position: relative;
+      width: 260px;           /* osnovna “normalna” velikost na strani */
+      max-width: 70vw;
+      aspect-ratio: 1 / 1;    /* pri večini je kvadrat; pri loparju bomo override */
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(0,0,0,.12);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    /* Slika produkta */
+    .productFigure img{
+      width:100%;
+      height:100%;
+      object-fit: contain;
+      display:block;
+      background: #EAF2FF; /* pastelno ozadje */
+    }
+
+    /* Ime vedno v centru */
+    .nameOverlay{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      pointer-events:none;
+      text-align:center;
+      padding: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #d13b3b; /* rdečkasta */
+      text-shadow: 0 1px 0 rgba(255,255,255,.35);
+      font-size: 28px; /* NORMALNA osnova — potem se poveča samo zato, ker se SCALE-a cel produkt */
+      line-height: 1;
+    }
+
+    /* malo manjši font na telefonu */
+    @media (max-width: 420px){
+      .nameOverlay{ font-size: 24px; }
+    }
+
+    .metaRow{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+      align-items:center;
+      justify-content: space-between;
+      border-top:1px solid rgba(255,255,255,.10);
+      padding-top: 10px;
+    }
+    .metaPill{
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      border-radius:999px;
+      padding: 6px 10px;
+      font-size:12px;
+      color: rgba(255,255,255,.88);
+    }
   </style>
 </head>
 <body>
 <header>
-  <h1>Product Editor</h1>
-  <p>5 produktov. Spreminjanje: <b>ime</b>, <b>velikost (mm)</b>, <b>cena (€)</b>. Večja velikost ⇒ večje črke v preview.</p>
+  <h1>Konfigurator produkta</h1>
+  <p>Ime je vedno v centru. Ob spremembi velikosti se poveča celoten produkt (slika + ime skupaj). Cena je nastavljiva.</p>
 </header>
 
 <div class="wrap">
@@ -98,14 +154,14 @@
         </div>
 
         <div>
-          <label>Ime produkta</label>
-          <input id="nameInput" type="text" placeholder="npr. Moj Produkt" />
+          <label>Ime (stranka vpiše po želji)</label>
+          <input id="nameInput" type="text" placeholder="npr. MARK" />
         </div>
 
         <div class="row" style="grid-template-columns: 1fr 1fr; gap:10px;">
           <div>
             <label>Velikost (mm)</label>
-            <input id="sizeInput" type="number" min="10" step="1" />
+            <input id="sizeInput" type="number" min="30" step="1" />
           </div>
           <div>
             <label>Cena (€)</label>
@@ -117,53 +173,47 @@
 
         <div class="btns">
           <button id="saveBtn">Shrani</button>
-          <button id="resetBtn">Reset na privzeto</button>
+          <button id="resetBtn">Reset</button>
         </div>
 
-        <hr />
-
-        <div class="row">
-          <label>Izvoz / Uvoz JSON</label>
-          <textarea id="jsonArea" placeholder='Klikni "Izvozi", ali prilepi JSON in klikni "Uvozi".'></textarea>
-          <div class="btns3">
-            <button id="exportBtn">Izvozi</button>
-            <button id="importBtn">Uvozi</button>
-            <button id="clearBtn">Počisti shrambo</button>
-          </div>
-          <div class="footnote" id="status"></div>
-        </div>
+        <div class="footnote" id="status"></div>
       </div>
     </section>
 
     <section class="card preview" id="previewCard">
       <div class="previewInner">
-        <span class="chip">● Live preview</span>
+        <span class="chip">● Preview</span>
 
-        <div id="productCard" class="productCard">
-          <p class="meta" id="sizeMeta">Velikost: —</p>
-          <h2 class="namePreview" id="previewName">—</h2>
-          <p class="pricePreview" id="previewPrice">—</p>
-
-          <div class="footnote">
-            Ta “kartica” simulira produkt. Velikost vpliva na scale in font-size.
+        <div class="productStage">
+          <div id="productScaled" class="productScaled">
+            <div id="productFigure" class="productFigure">
+              <img id="productImg" alt="Produkt" />
+              <div id="nameOverlay" class="nameOverlay">—</div>
+            </div>
           </div>
         </div>
 
-        <div class="footnote">Namig: klikni “Shrani” → ostane tudi po refreshu.</div>
+        <div class="metaRow">
+          <span class="metaPill" id="metaSize">Velikost: —</span>
+          <span class="metaPill" id="metaPrice">Cena: —</span>
+        </div>
+
+        <div class="footnote">Če slika ne pokaže: preveri, da so slike v mapi <b>/images</b> in da se imena ujemajo.</div>
       </div>
     </section>
   </div>
 </div>
 
 <script>
-  const STORAGE_KEY = "product_editor_v3_name_size_price";
+  const STORAGE_KEY = "product_editor_v4_images_center_text";
 
+  // baseMm = “normalna” velikost, pri kateri je scale = 1
   const defaultProducts = [
-    { id:"p1", name:"Produkt 1", sizeMm: 60,  priceEur: 9.99 },
-    { id:"p2", name:"Produkt 2", sizeMm: 90,  priceEur: 14.50 },
-    { id:"p3", name:"Produkt 3", sizeMm: 120, priceEur: 19.00 },
-    { id:"p4", name:"Produkt 4", sizeMm: 150, priceEur: 24.90 },
-    { id:"p5", name:"Produkt 5", sizeMm: 75,  priceEur: 11.20 },
+    { id:"p1", label:"Oblak",  image:"images/p1.png", baseMm: 80,  name:"", sizeMm: 80,  priceEur: 9.99,  aspect:"1/1" },
+    { id:"p2", label:"Žoga",   image:"images/p2.png", baseMm: 80,  name:"", sizeMm: 80,  priceEur: 12.99, aspect:"1/1" },
+    { id:"p3", label:"Lopar",  image:"images/p3.png", baseMm: 120, name:"", sizeMm: 120, priceEur: 14.99, aspect:"3/4" },
+    { id:"p4", label:"Produkt 4", image:"images/p4.png", baseMm: 80, name:"", sizeMm: 80, priceEur: 0.00, aspect:"1/1" },
+    { id:"p5", label:"Produkt 5", image:"images/p5.png", baseMm: 80, name:"", sizeMm: 80, priceEur: 0.00, aspect:"1/1" },
   ];
 
   const els = {
@@ -174,16 +224,14 @@
     warn: document.getElementById("warn"),
     save: document.getElementById("saveBtn"),
     reset: document.getElementById("resetBtn"),
-    export: document.getElementById("exportBtn"),
-    imp: document.getElementById("importBtn"),
-    clear: document.getElementById("clearBtn"),
-    json: document.getElementById("jsonArea"),
     status: document.getElementById("status"),
-    previewCard: document.getElementById("previewCard"),
-    productCard: document.getElementById("productCard"),
-    sizeMeta: document.getElementById("sizeMeta"),
-    previewName: document.getElementById("previewName"),
-    previewPrice: document.getElementById("previewPrice"),
+
+    productScaled: document.getElementById("productScaled"),
+    figure: document.getElementById("productFigure"),
+    img: document.getElementById("productImg"),
+    overlay: document.getElementById("nameOverlay"),
+    metaSize: document.getElementById("metaSize"),
+    metaPrice: document.getElementById("metaPrice"),
   };
 
   function clone(x){ return JSON.parse(JSON.stringify(x)); }
@@ -195,9 +243,7 @@
       const parsed = JSON.parse(raw);
       if(!Array.isArray(parsed) || parsed.length !== 5) return clone(defaultProducts);
       return parsed;
-    } catch {
-      return clone(defaultProducts);
-    }
+    } catch { return clone(defaultProducts); }
   }
 
   function saveState(products){
@@ -206,23 +252,6 @@
 
   let products = loadState();
   let currentId = products[0]?.id;
-
-  function setStatus(msg){ els.status.textContent = msg || ""; }
-
-  function renderSelect(){
-    els.select.innerHTML = "";
-    for(const p of products){
-      const opt = document.createElement("option");
-      opt.value = p.id;
-      opt.textContent = p.name;
-      els.select.appendChild(opt);
-    }
-    els.select.value = currentId;
-  }
-
-  function getCurrent(){
-    return products.find(p => p.id === currentId) || products[0];
-  }
 
   function euro(n){
     const v = Number(n);
@@ -233,36 +262,35 @@
   function validate(sizeMm, priceEur){
     const s = Number(sizeMm);
     const p = Number(priceEur);
-
     if(!Number.isFinite(s)) return "Velikost mora biti številka.";
-    if(s < 10) return "Velikost naj bo vsaj 10 mm.";
-    if(s > 500) return "Velikost je zelo velika (> 500 mm). Preveri vnos.";
+    if(s < 30) return "Velikost naj bo vsaj 30 mm.";
+    if(s > 300) return "Velikost je zelo velika (> 300 mm).";
     if(!Number.isFinite(p)) return "Cena mora biti številka.";
     if(p < 0) return "Cena ne more biti negativna.";
-    if(p > 99999) return "Cena je previsoka (preveri vnos).";
     return "";
   }
 
-  // scaling: 50mm -> 0.85, 200mm -> 1.35 (omejeno)
-  function scaleFromSize(sizeMm){
-    const s = Number(sizeMm);
-    const t = (s - 50) / (200 - 50);
-    const clamped = Math.max(0, Math.min(1, t));
-    return 0.85 + clamped * (1.35 - 0.85);
+  function renderSelect(){
+    els.select.innerHTML = "";
+    for(const p of products){
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.label; // ime produkta v seznamu
+      els.select.appendChild(opt);
+    }
+    els.select.value = currentId;
   }
 
-  // font sizing: 50mm -> 20px title, 200mm -> 34px title (omejeno)
-  function titleFontFromSize(sizeMm){
-    const s = Number(sizeMm);
-    const t = (s - 50) / (200 - 50);
-    const clamped = Math.max(0, Math.min(1, t));
-    return 20 + clamped * (34 - 20);
+  function getCurrent(){
+    return products.find(p => p.id === currentId) || products[0];
   }
+
+  function setStatus(msg){ els.status.textContent = msg || ""; }
 
   function syncFormFromCurrent(){
     const p = getCurrent();
     if(!p) return;
-    els.name.value = p.name;
+    els.name.value = p.name || "";
     els.size.value = p.sizeMm;
     els.price.value = p.priceEur;
     els.warn.textContent = validate(els.size.value, els.price.value);
@@ -272,7 +300,7 @@
   function updateCurrentFromForm(){
     const p = getCurrent();
     if(!p) return;
-    p.name = els.name.value.trim() || "Brez imena";
+    p.name = (els.name.value || "").trim();
     p.sizeMm = Number(els.size.value);
     p.priceEur = Number(els.price.value);
   }
@@ -281,26 +309,23 @@
     const p = getCurrent();
     if(!p) return;
 
-    els.previewName.textContent = p.name;
-    els.previewPrice.textContent = euro(p.priceEur);
-    els.sizeMeta.textContent = `Velikost: ${p.sizeMm} mm`;
+    // slika
+    els.img.src = p.image;
 
-    const scale = scaleFromSize(p.sizeMm);
-    const titlePx = titleFontFromSize(p.sizeMm);
+    // aspect ratio (lopar je bolj “pokončen”)
+    els.figure.style.aspectRatio = p.aspect || "1/1";
 
-    // apply scale + fonts
-    els.productCard.style.transform = `scale(${scale})`;
-    els.previewName.style.fontSize = `${titlePx}px`;
-    els.previewPrice.style.fontSize = `${Math.round(titlePx * 0.65)}px`;
+    // ime v centru (če prazno, pokaži namig)
+    els.overlay.textContent = p.name ? p.name : "VPIŠI IME";
 
-    // malo dinamičnega ozadja
-    const t = Math.max(0, Math.min(1, (p.sizeMm - 50) / 150));
-    const a = 0.18 + t * 0.18;
-    const b = 0.08 + (1 - t) * 0.12;
-    els.previewCard.style.background =
-      `radial-gradient(900px 360px at 20% 10%, rgba(91,140,255,${a}) 0%, rgba(0,0,0,0) 55%),
-       radial-gradient(800px 340px at 80% 35%, rgba(255,122,217,${b}) 0%, rgba(0,0,0,0) 55%),
-       color-mix(in srgb, #121a33 86%, transparent)`;
+    // SCALE celotnega produkta (slika + tekst)
+    // scale = sizeMm / baseMm (omejimo, da ne razbije strani)
+    const rawScale = p.sizeMm / (p.baseMm || 80);
+    const scale = Math.max(0.7, Math.min(1.8, rawScale));
+    els.productScaled.style.transform = `scale(${scale})`;
+
+    els.metaSize.textContent = `Velikost: ${p.sizeMm} mm`;
+    els.metaPrice.textContent = `Cena: ${euro(p.priceEur)}`;
   }
 
   // events
@@ -317,8 +342,6 @@
 
       if(!w){
         updateCurrentFromForm();
-        renderSelect();
-        els.select.value = currentId;
         renderPreview();
         setStatus("Spremembe niso shranjene.");
       } else {
@@ -334,59 +357,17 @@
 
     updateCurrentFromForm();
     saveState(products);
-    renderSelect();
-    els.select.value = currentId;
-    setStatus("Shranjeno v localStorage ✅");
+    setStatus("Shranjeno ✅");
   });
 
   els.reset.addEventListener("click", () => {
     const def = defaultProducts.find(d => d.id === currentId);
     if(!def) return;
     const p = getCurrent();
-    p.name = def.name;
-    p.sizeMm = def.sizeMm;
-    p.priceEur = def.priceEur;
+    Object.assign(p, clone(def));
     syncFormFromCurrent();
     saveState(products);
-    renderSelect();
-    els.select.value = currentId;
-    setStatus("Reset narejen ✅");
-  });
-
-  els.export.addEventListener("click", () => {
-    els.json.value = JSON.stringify(products, null, 2);
-    setStatus("Izvoženo v tekst polje ✅");
-  });
-
-  els.imp.addEventListener("click", () => {
-    try{
-      const parsed = JSON.parse(els.json.value);
-      if(!Array.isArray(parsed) || parsed.length !== 5) throw new Error("Mora biti 5 produktov.");
-      for(const p of parsed){
-        if(!p.id || !p.name) throw new Error("Manjka id/name.");
-        if(!Number.isFinite(Number(p.sizeMm))) throw new Error("sizeMm ni številka.");
-        if(!Number.isFinite(Number(p.priceEur))) throw new Error("priceEur ni številka.");
-        const w = validate(p.sizeMm, p.priceEur);
-        if(w) throw new Error(w);
-      }
-      products = parsed;
-      currentId = products[0].id;
-      saveState(products);
-      renderSelect();
-      syncFormFromCurrent();
-      setStatus("Uvoženo in shranjeno ✅");
-    } catch {
-      setStatus("Napaka pri uvozu: preveri JSON (polja: id, name, sizeMm, priceEur).");
-    }
-  });
-
-  els.clear.addEventListener("click", () => {
-    localStorage.removeItem(STORAGE_KEY);
-    products = clone(defaultProducts);
-    currentId = products[0].id;
-    renderSelect();
-    syncFormFromCurrent();
-    setStatus("Shramba pobrisana. Nazaj na privzeto ✅");
+    setStatus("Reset ✅");
   });
 
   // init
