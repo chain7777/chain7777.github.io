@@ -146,7 +146,8 @@
         </div>
 
         <div class="pill" style="opacity:.9;">
-          Slike v repo: <b>/images/p1.png</b>, <b>/images/p2.png</b>, <b>/images/p3.png</b>
+          Slike naloži v isto mapo kot index.html:<br/>
+          <b>p1.png</b>, <b>p2.png</b>, <b>p3.png</b>
         </div>
       </div>
     </section>
@@ -185,6 +186,7 @@
     return Math.max(min, Math.min(max, n));
   }
 
+  // Linearni izračun: 30->8, 60->11
   function calcPrice(sizeMm){
     const s = clamp(Number(sizeMm), MIN_MM, MAX_MM);
     const t = (s - MIN_MM) / (MAX_MM - MIN_MM); // 0..1
@@ -193,15 +195,15 @@
   }
 
   function euro(n){
-    // prikaz npr. "8,00 €"
     return new Intl.NumberFormat("sl-SI", { style:"currency", currency:"EUR" }).format(n);
   }
 
   // ====== PRODUKTI ======
+  // Ker ne dela /images, so slike v ISTI mapi kot index.html:
   const products = [
-    { id:"p1", label:"Oblak",          image:"images/p1.png", aspect:"1/1" },
-    { id:"p2", label:"Nogometna žoga", image:"images/p2.png", aspect:"1/1" },
-    { id:"p3", label:"Tenis lopar",    image:"images/p3.png", aspect:"3/4" },
+    { id:"p1", label:"Oblak",          image:"p1.png", aspect:"1/1" },
+    { id:"p2", label:"Nogometna žoga", image:"p2.png", aspect:"1/1" },
+    { id:"p3", label:"Tenis lopar",    image:"p3.png", aspect:"3/4" },
   ];
 
   const els = {
@@ -257,7 +259,6 @@
   }
 
   function readSize(){
-    // 100% prisilimo v range 30–60
     const raw = Number(els.sizeRange.value);
     const clamped = clamp(raw, MIN_MM, MAX_MM);
     if (String(clamped) !== String(els.sizeRange.value)) {
@@ -283,9 +284,9 @@
     els.priceBox.value = euro(price);
     els.pricePill.textContent = `Cena: ${euro(price)}`;
 
-    // name overlay
+    // name overlay (uppercase)
     const name = (els.name.value || "").trim().toUpperCase();
-    els.name.value = name; // keep uppercase
+    els.name.value = name;
     els.overlay.textContent = name ? name : "VPIŠI IME";
     els.previewNamePill.textContent = name ? `Ime: ${name}` : "Ime: —";
 
@@ -308,15 +309,13 @@
   });
 
   els.name.addEventListener("input", render);
-
   els.sizeRange.addEventListener("input", render);
-
   window.addEventListener("resize", render);
 
   // ====== INIT ======
   renderSelect();
 
-  // nastavi drsnik hard
+  // HARD nastavitev drsnika
   els.sizeRange.min = String(MIN_MM);
   els.sizeRange.max = String(MAX_MM);
   els.sizeRange.step = "1";
