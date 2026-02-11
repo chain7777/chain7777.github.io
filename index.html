@@ -1,486 +1,397 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart NFC Nametagi - Varnost za Vašega Otroka 🇸🇮</title>
-    <meta name="description" content="Premium 3D nametagi z NFC tehnologijo za varnost otrok. Made in Slovenia. Dostava 2-3 dni.">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 60px 0;
-            text-align: center;
-        }
-        
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-        }
-        
-        header p {
-            font-size: 1.2em;
-            opacity: 0.95;
-            margin-bottom: 10px;
-        }
-        
-        .badge {
-            background: rgba(255,255,255,0.25);
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-size: 0.9em;
-            display: inline-block;
-            margin-top: 10px;
-        }
-        
-        .features {
-            padding: 60px 0;
-            background: #f8f9fa;
-        }
-        
-        .features h2 {
-            text-align: center;
-            font-size: 2.2em;
-            margin-bottom: 40px;
-            color: #333;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-        }
-        
-        .feature-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-        }
-        
-        .feature-icon {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-        }
-        
-        .feature-card h3 {
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-        
-        .products {
-            padding: 60px 0;
-        }
-        
-        .products h2 {
-            text-align: center;
-            font-size: 2.2em;
-            margin-bottom: 40px;
-        }
-        
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        
-        .product-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-        }
-        
-        .product-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
-        }
-        
-        .product-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        
-        .product-header h3 {
-            font-size: 1.8em;
-            margin-bottom: 8px;
-        }
-        
-        .price {
-            font-size: 2.8em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        .product-badge {
-            background: rgba(255,255,255,0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.75em;
-            margin-top: 8px;
-            display: inline-block;
-        }
-        
-        .product-body {
-            padding: 25px;
-        }
-        
-        .product-features {
-            list-style: none;
-            margin: 15px 0 20px 0;
-        }
-        
-        .product-features li {
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 0.95em;
-        }
-        
-        .product-features li:last-child {
-            border-bottom: none;
-        }
-        
-        .product-features li:before {
-            content: "✓ ";
-            color: #667eea;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        
-        .cta-button {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 50px;
-            font-size: 1.1em;
-            font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .cta-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .family-pack {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 40px auto;
-            max-width: 600px;
-        }
-        
-        .family-pack h3 {
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        
-        .family-pack .price {
-            font-size: 3em;
-            margin: 15px 0;
-        }
-        
-        .family-pack .savings {
-            font-size: 1.2em;
-            background: rgba(255,255,255,0.3);
-            padding: 8px 20px;
-            border-radius: 25px;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-        
-        .how-it-works {
-            padding: 60px 0;
-            background: #f8f9fa;
-        }
-        
-        .how-it-works h2 {
-            text-align: center;
-            font-size: 2.2em;
-            margin-bottom: 40px;
-        }
-        
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px;
-        }
-        
-        .step {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .step-number {
-            width: 55px;
-            height: 55px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8em;
-            font-weight: bold;
-            margin: 0 auto 15px;
-        }
-        
-        .contact {
-            padding: 60px 0;
-            text-align: center;
-        }
-        
-        .contact h2 {
-            font-size: 2.2em;
-            margin-bottom: 25px;
-        }
-        
-        .contact-info {
-            font-size: 1.2em;
-            margin: 15px 0;
-        }
-        
-        .contact-info a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .contact-info a:hover {
-            text-decoration: underline;
-        }
-        
-        footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 25px 0;
-            font-size: 0.95em;
-        }
-        
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8em;
-            }
-            
-            header p {
-                font-size: 1em;
-            }
-            
-            .product-grid, .features-grid, .steps {
-                grid-template-columns: 1fr;
-            }
-            
-            .price {
-                font-size: 2.2em;
-            }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Product Editor (Ime + Velikost + Cena)</title>
+  <style>
+    :root { --bg:#0b1020; --panel:#121a33; --text:#e9eeff; --muted:#aab3d6; --border:#263056; }
+    * { box-sizing: border-box; }
+    body{
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--text);
+      background: radial-gradient(1200px 600px at 20% 0%, #16235b 0%, var(--bg) 45%),
+                  radial-gradient(900px 500px at 80% 20%, #4a1d6a 0%, var(--bg) 55%);
+    }
+    header{ padding:24px 18px; max-width:1100px; margin:0 auto; }
+    header h1{ margin:0 0 6px; font-size:22px; }
+    header p{ margin:0; color:var(--muted); }
+
+    .wrap{ max-width:1100px; margin:0 auto; padding:0 18px 28px; }
+    .grid{ display:grid; grid-template-columns: 360px 1fr; gap:16px; }
+    @media (max-width: 900px){ .grid{ grid-template-columns:1fr; } }
+
+    .card{
+      background: color-mix(in srgb, var(--panel) 86%, transparent);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      box-shadow:0 10px 35px rgba(0,0,0,.25);
+      backdrop-filter: blur(8px);
+    }
+
+    label{ font-size:12px; color:var(--muted); }
+    input, select, button, textarea{
+      width:100%;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#0d1430;
+      color:var(--text);
+      padding:10px 12px;
+      outline:none;
+    }
+    button{
+      cursor:pointer;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+    }
+    button:hover{ border-color:#3a4a84; }
+
+    .row{ display:grid; gap:10px; }
+    .btns{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .btns3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    hr{ border:none; border-top:1px solid var(--border); margin: 6px 0; }
+    .warn{ font-size:12px; color:#ffd36e; }
+
+    /* preview */
+    .preview{ border-radius:18px; overflow:hidden; border:1px solid var(--border); min-height:320px; }
+    .previewInner{ padding:18px; display:grid; gap:14px; }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      font-size:12px; color:rgba(255,255,255,.92);
+      background: rgba(255,255,255,.06);
+      width: fit-content;
+    }
+
+    /* “Produkt” kartica v preview */
+    .productCard{
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.16);
+      padding:16px;
+      display:grid;
+      gap:10px;
+      transform-origin: top left;
+    }
+
+    .namePreview{ margin:0; line-height:1.1; }
+    .pricePreview{ margin:0; opacity:.92; }
+    .meta{ font-size:12px; color: rgba(255,255,255,.75); }
+
+    .footnote{ font-size:12px; color:var(--muted); margin-top:8px; }
+    textarea{ min-height: 110px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>🎨 Smart NFC Nametagi</h1>
-            <p>Premium 3D izdelki za varnost vašega otroka</p>
-            <div class="badge">🇸🇮 Made in Slovenia | Dostava 2-3 dni</div>
-        </div>
-    </header>
+<header>
+  <h1>Product Editor</h1>
+  <p>5 produktov. Spreminjanje: <b>ime</b>, <b>velikost (mm)</b>, <b>cena (€)</b>. Večja velikost ⇒ večje črke v preview.</p>
+</header>
 
-    <section class="features">
-        <div class="container">
-            <h2>Zakaj Smart NFC Tag?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Varnost Najprej</h3>
-                    <p>V primeru izgube lahko kdorkoli skenira tag in vas takoj kontaktira</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3>NFC Tehnologija</h3>
-                    <p>Samo približaš telefon in vidiš vse pomembne podatke - brez aplikacije!</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>Premium Dizajn</h3>
-                    <p>3D shadow effect v barvah po želji - personalizirano ime otroka</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💧</div>
-                    <h3>Vodoodporen</h3>
-                    <p>Odporen na vodo, obrabo in vsakodnevno uporabo</p>
-                </div>
-            </div>
+<div class="wrap">
+  <div class="grid">
+    <section class="card">
+      <div class="row">
+        <div>
+          <label>Produkt</label>
+          <select id="productSelect"></select>
         </div>
+
+        <div>
+          <label>Ime produkta</label>
+          <input id="nameInput" type="text" placeholder="npr. Moj Produkt" />
+        </div>
+
+        <div class="row" style="grid-template-columns: 1fr 1fr; gap:10px;">
+          <div>
+            <label>Velikost (mm)</label>
+            <input id="sizeInput" type="number" min="10" step="1" />
+          </div>
+          <div>
+            <label>Cena (€)</label>
+            <input id="priceInput" type="number" min="0" step="0.01" />
+          </div>
+        </div>
+
+        <div class="warn" id="warn"></div>
+
+        <div class="btns">
+          <button id="saveBtn">Shrani</button>
+          <button id="resetBtn">Reset na privzeto</button>
+        </div>
+
+        <hr />
+
+        <div class="row">
+          <label>Izvoz / Uvoz JSON</label>
+          <textarea id="jsonArea" placeholder='Klikni "Izvozi", ali prilepi JSON in klikni "Uvozi".'></textarea>
+          <div class="btns3">
+            <button id="exportBtn">Izvozi</button>
+            <button id="importBtn">Uvozi</button>
+            <button id="clearBtn">Počisti shrambo</button>
+          </div>
+          <div class="footnote" id="status"></div>
+        </div>
+      </div>
     </section>
 
-    <section class="products">
-        <div class="container">
-            <h2>Naši Produkti</h2>
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="product-header">
-                        <h3>Basic Tag</h3>
-                        <div class="price">8€</div>
-                        <div class="product-badge">Dostopna opcija</div>
-                    </div>
-                    <div class="product-body">
-                        <ul class="product-features">
-                            <li>3D shadow effect</li>
-                            <li>2 barvi po izbiri</li>
-                            <li>Personalizirano ime</li>
-                            <li>Keychain odprtina</li>
-                            <li>Premium kvaliteta PLA</li>
-                            <li>Dostava 3-5 dni</li>
-                        </ul>
-                        <a href="mailto:info@chain7777.com?subject=Naročilo: Basic Tag (8€)&body=Ime otroka:%0D%0ABarvi (npr. modra + bela):%0D%0ANaslov za dostavo:" class="cta-button">Naroči Zdaj</a>
-                    </div>
-                </div>
+    <section class="card preview" id="previewCard">
+      <div class="previewInner">
+        <span class="chip">● Live preview</span>
 
-                <div class="product-card">
-                    <div class="product-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                        <h3>Smart NFC Tag</h3>
-                        <div class="price">15€</div>
-                        <div class="product-badge">⭐ NAJBOLJ PRILJUBLJEN</div>
-                    </div>
-                    <div class="product-body">
-                        <ul class="product-features">
-                            <li>Vse iz Basic Tag +</li>
-                            <li>3 barve (upgrade!)</li>
-                            <li>NFC chip vgrajen</li>
-                            <li>Emergency kontakti (mama, ata)</li>
-                            <li>Naslov doma shranjen</li>
-                            <li>Alergije / zdravstveni podatki</li>
-                            <li>10 let garancija na chip</li>
-                            <li>Dostava 2-3 dni</li>
-                        </ul>
-                        <a href="mailto:info@chain7777.com?subject=Naročilo: Smart NFC Tag (15€)&body=Ime otroka:%0D%0A3 barve (npr. siva + črna + modra):%0D%0AKontakt mama:%0D%0AKontakt ata:%0D%0ANaslov:%0D%0AAlergije:%0D%0ANaslov za dostavo:" class="cta-button">Naroči Zdaj</a>
-                    </div>
-                </div>
+        <div id="productCard" class="productCard">
+          <p class="meta" id="sizeMeta">Velikost: —</p>
+          <h2 class="namePreview" id="previewName">—</h2>
+          <p class="pricePreview" id="previewPrice">—</p>
 
-                <div class="product-card">
-                    <div class="product-header" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                        <h3>Premium Smart</h3>
-                        <div class="price">20€</div>
-                        <div class="product-badge">Darilo Edition</div>
-                    </div>
-                    <div class="product-body">
-                        <ul class="product-features">
-                            <li>Vse iz Smart Tag +</li>
-                            <li>QR code backup</li>
-                            <li>Waterproof zapečatenje</li>
-                            <li>Express izdelava (2 dni)</li>
-                            <li>Premium gift packaging</li>
-                            <li>Custom barve po želji</li>
-                            <li>Dodatni kontakt (babica/zdravnik)</li>
-                            <li>Dostava 1-2 dni</li>
-                        </ul>
-                        <a href="mailto:info@chain7777.com?subject=Naročilo: Premium Smart Tag (20€)&body=Ime otroka:%0D%0ACustom barve:%0D%0AKontakti:%0D%0APodatki za NFC:%0D%0ANaslov za dostavo:%0D%0ASpecialne želje:" class="cta-button">Naroči Zdaj</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="family-pack">
-                <h3>👨‍👩‍👧‍👦 Family Pack</h3>
-                <p style="font-size: 1.1em;">3× Smart NFC Tagi</p>
-                <div class="price">35€</div>
-                <div class="savings">Prihranite 10€!</div>
-                <p style="margin-bottom: 20px;">Perfektno za družine z več otroki!</p>
-                <a href="mailto:info@chain7777.com?subject=Naročilo: Family Pack (35€)&body=OTROK 1 - Ime:%0D%0ABarve:%0D%0A%0D%0AOTROK 2 - Ime:%0D%0ABarve:%0D%0A%0D%0AOTROK 3 - Ime:%0D%0ABarve:%0D%0A%0D%0AKontakti (skupno):%0D%0ANaslov:%0D%0ANaslov za dostavo:" class="cta-button" style="background: white; color: #f5576c;">Naroči Family Pack</a>
-            </div>
+          <div class="footnote">
+            Ta “kartica” simulira produkt. Velikost vpliva na scale in font-size.
+          </div>
         </div>
+
+        <div class="footnote">Namig: klikni “Shrani” → ostane tudi po refreshu.</div>
+      </div>
     </section>
+  </div>
+</div>
 
-    <section class="how-it-works">
-        <div class="container">
-            <h2>Kako Deluje?</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Izberi</h3>
-                    <p>Poveš nam ime otroka in barve po željah</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Programiranje</h3>
-                    <p>Tvoje podatke shranimo na NFC chip (Smart/Premium)</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>3D Print</h3>
-                    <p>Premium kvaliteta, 3D shadow effect, made in Slovenia</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Dostava</h3>
-                    <p>Prejmeš v 2-5 dni (odvisno od paketa)</p>
-                </div>
-            </div>
-        </div>
-    </section>
+<script>
+  const STORAGE_KEY = "product_editor_v3_name_size_price";
 
-    <section class="contact">
-        <div class="container">
-            <h2>Kontakt & Naročila</h2>
-            <div class="contact-info">
-                📧 Email: <a href="mailto:info@chain7777.com">info@chain7777.com</a>
-            </div>
-            <div class="contact-info">
-                📱 Instagram: <a href="https://instagram.com/chain7777_smart_tags">@chain7777_smart_tags</a>
-            </div>
-            <div class="contact-info">
-                🛒 Bolha.com: <a href="https://www.bolha.com">Išči "Smart NFC Tag chain7777"</a>
-            </div>
-            <div class="contact-info">
-                📍 Slovenija | Dostava po vsej Sloveniji
-            </div>
-            <p style="margin-top: 30px; color: #666; font-size: 0.95em;">
-                💬 Vprašanja? Pišite nam na email ali DM Instagram - odgovorimo v 24h!
-            </p>
-        </div>
-    </section>
+  const defaultProducts = [
+    { id:"p1", name:"Produkt 1", sizeMm: 60,  priceEur: 9.99 },
+    { id:"p2", name:"Produkt 2", sizeMm: 90,  priceEur: 14.50 },
+    { id:"p3", name:"Produkt 3", sizeMm: 120, priceEur: 19.00 },
+    { id:"p4", name:"Produkt 4", sizeMm: 150, priceEur: 24.90 },
+    { id:"p5", name:"Produkt 5", sizeMm: 75,  priceEur: 11.20 },
+  ];
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Smart NFC Nametagi by chain7777</p>
-            <p style="margin-top: 8px;">🇸🇮 Vsi izdelki narejeni v Sloveniji | Dostava 2-5 dni | Plačilo po povzetju možno</p>
-        </div>
-    </footer>
+  const els = {
+    select: document.getElementById("productSelect"),
+    name: document.getElementById("nameInput"),
+    size: document.getElementById("sizeInput"),
+    price: document.getElementById("priceInput"),
+    warn: document.getElementById("warn"),
+    save: document.getElementById("saveBtn"),
+    reset: document.getElementById("resetBtn"),
+    export: document.getElementById("exportBtn"),
+    imp: document.getElementById("importBtn"),
+    clear: document.getElementById("clearBtn"),
+    json: document.getElementById("jsonArea"),
+    status: document.getElementById("status"),
+    previewCard: document.getElementById("previewCard"),
+    productCard: document.getElementById("productCard"),
+    sizeMeta: document.getElementById("sizeMeta"),
+    previewName: document.getElementById("previewName"),
+    previewPrice: document.getElementById("previewPrice"),
+  };
+
+  function clone(x){ return JSON.parse(JSON.stringify(x)); }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return clone(defaultProducts);
+      const parsed = JSON.parse(raw);
+      if(!Array.isArray(parsed) || parsed.length !== 5) return clone(defaultProducts);
+      return parsed;
+    } catch {
+      return clone(defaultProducts);
+    }
+  }
+
+  function saveState(products){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(products, null, 2));
+  }
+
+  let products = loadState();
+  let currentId = products[0]?.id;
+
+  function setStatus(msg){ els.status.textContent = msg || ""; }
+
+  function renderSelect(){
+    els.select.innerHTML = "";
+    for(const p of products){
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.name;
+      els.select.appendChild(opt);
+    }
+    els.select.value = currentId;
+  }
+
+  function getCurrent(){
+    return products.find(p => p.id === currentId) || products[0];
+  }
+
+  function euro(n){
+    const v = Number(n);
+    if(!Number.isFinite(v)) return "—";
+    return new Intl.NumberFormat("sl-SI", { style:"currency", currency:"EUR" }).format(v);
+  }
+
+  function validate(sizeMm, priceEur){
+    const s = Number(sizeMm);
+    const p = Number(priceEur);
+
+    if(!Number.isFinite(s)) return "Velikost mora biti številka.";
+    if(s < 10) return "Velikost naj bo vsaj 10 mm.";
+    if(s > 500) return "Velikost je zelo velika (> 500 mm). Preveri vnos.";
+    if(!Number.isFinite(p)) return "Cena mora biti številka.";
+    if(p < 0) return "Cena ne more biti negativna.";
+    if(p > 99999) return "Cena je previsoka (preveri vnos).";
+    return "";
+  }
+
+  // scaling: 50mm -> 0.85, 200mm -> 1.35 (omejeno)
+  function scaleFromSize(sizeMm){
+    const s = Number(sizeMm);
+    const t = (s - 50) / (200 - 50);
+    const clamped = Math.max(0, Math.min(1, t));
+    return 0.85 + clamped * (1.35 - 0.85);
+  }
+
+  // font sizing: 50mm -> 20px title, 200mm -> 34px title (omejeno)
+  function titleFontFromSize(sizeMm){
+    const s = Number(sizeMm);
+    const t = (s - 50) / (200 - 50);
+    const clamped = Math.max(0, Math.min(1, t));
+    return 20 + clamped * (34 - 20);
+  }
+
+  function syncFormFromCurrent(){
+    const p = getCurrent();
+    if(!p) return;
+    els.name.value = p.name;
+    els.size.value = p.sizeMm;
+    els.price.value = p.priceEur;
+    els.warn.textContent = validate(els.size.value, els.price.value);
+    renderPreview();
+  }
+
+  function updateCurrentFromForm(){
+    const p = getCurrent();
+    if(!p) return;
+    p.name = els.name.value.trim() || "Brez imena";
+    p.sizeMm = Number(els.size.value);
+    p.priceEur = Number(els.price.value);
+  }
+
+  function renderPreview(){
+    const p = getCurrent();
+    if(!p) return;
+
+    els.previewName.textContent = p.name;
+    els.previewPrice.textContent = euro(p.priceEur);
+    els.sizeMeta.textContent = `Velikost: ${p.sizeMm} mm`;
+
+    const scale = scaleFromSize(p.sizeMm);
+    const titlePx = titleFontFromSize(p.sizeMm);
+
+    // apply scale + fonts
+    els.productCard.style.transform = `scale(${scale})`;
+    els.previewName.style.fontSize = `${titlePx}px`;
+    els.previewPrice.style.fontSize = `${Math.round(titlePx * 0.65)}px`;
+
+    // malo dinamičnega ozadja
+    const t = Math.max(0, Math.min(1, (p.sizeMm - 50) / 150));
+    const a = 0.18 + t * 0.18;
+    const b = 0.08 + (1 - t) * 0.12;
+    els.previewCard.style.background =
+      `radial-gradient(900px 360px at 20% 10%, rgba(91,140,255,${a}) 0%, rgba(0,0,0,0) 55%),
+       radial-gradient(800px 340px at 80% 35%, rgba(255,122,217,${b}) 0%, rgba(0,0,0,0) 55%),
+       color-mix(in srgb, #121a33 86%, transparent)`;
+  }
+
+  // events
+  els.select.addEventListener("change", () => {
+    currentId = els.select.value;
+    syncFormFromCurrent();
+    setStatus("");
+  });
+
+  for(const input of [els.name, els.size, els.price]){
+    input.addEventListener("input", () => {
+      const w = validate(els.size.value, els.price.value);
+      els.warn.textContent = w;
+
+      if(!w){
+        updateCurrentFromForm();
+        renderSelect();
+        els.select.value = currentId;
+        renderPreview();
+        setStatus("Spremembe niso shranjene.");
+      } else {
+        setStatus("Popravi vrednosti in potem shrani.");
+      }
+    });
+  }
+
+  els.save.addEventListener("click", () => {
+    const w = validate(els.size.value, els.price.value);
+    els.warn.textContent = w;
+    if(w){ setStatus("Ne morem shraniti: popravi vrednosti."); return; }
+
+    updateCurrentFromForm();
+    saveState(products);
+    renderSelect();
+    els.select.value = currentId;
+    setStatus("Shranjeno v localStorage ✅");
+  });
+
+  els.reset.addEventListener("click", () => {
+    const def = defaultProducts.find(d => d.id === currentId);
+    if(!def) return;
+    const p = getCurrent();
+    p.name = def.name;
+    p.sizeMm = def.sizeMm;
+    p.priceEur = def.priceEur;
+    syncFormFromCurrent();
+    saveState(products);
+    renderSelect();
+    els.select.value = currentId;
+    setStatus("Reset narejen ✅");
+  });
+
+  els.export.addEventListener("click", () => {
+    els.json.value = JSON.stringify(products, null, 2);
+    setStatus("Izvoženo v tekst polje ✅");
+  });
+
+  els.imp.addEventListener("click", () => {
+    try{
+      const parsed = JSON.parse(els.json.value);
+      if(!Array.isArray(parsed) || parsed.length !== 5) throw new Error("Mora biti 5 produktov.");
+      for(const p of parsed){
+        if(!p.id || !p.name) throw new Error("Manjka id/name.");
+        if(!Number.isFinite(Number(p.sizeMm))) throw new Error("sizeMm ni številka.");
+        if(!Number.isFinite(Number(p.priceEur))) throw new Error("priceEur ni številka.");
+        const w = validate(p.sizeMm, p.priceEur);
+        if(w) throw new Error(w);
+      }
+      products = parsed;
+      currentId = products[0].id;
+      saveState(products);
+      renderSelect();
+      syncFormFromCurrent();
+      setStatus("Uvoženo in shranjeno ✅");
+    } catch {
+      setStatus("Napaka pri uvozu: preveri JSON (polja: id, name, sizeMm, priceEur).");
+    }
+  });
+
+  els.clear.addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEY);
+    products = clone(defaultProducts);
+    currentId = products[0].id;
+    renderSelect();
+    syncFormFromCurrent();
+    setStatus("Shramba pobrisana. Nazaj na privzeto ✅");
+  });
+
+  // init
+  renderSelect();
+  syncFormFromCurrent();
+</script>
 </body>
 </html>
