@@ -39,13 +39,12 @@
       padding:10px 12px;
       outline:none;
     }
-    input[type="range"]{ padding: 0; height: 38px; }
+    input[type="range"]{ padding:0; height: 38px; }
     .row{ display:grid; gap:10px; }
 
     .twoCol{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
     @media (max-width: 420px){ .twoCol{ grid-template-columns:1fr; } }
 
-    /* PREVIEW */
     .preview{ border-radius:18px; overflow:hidden; border:1px solid var(--border); min-height:360px; }
     .previewInner{ padding:18px; display:grid; gap:14px; }
     .chip{
@@ -57,18 +56,8 @@
       width: fit-content;
     }
 
-    .stage{
-      width:100%;
-      display:grid;
-      place-items:center;
-      padding: 12px 0 6px;
-    }
-
-    /* SCALE wrapper */
-    .scaled{
-      transform-origin: center;
-      will-change: transform;
-    }
+    .stage{ width:100%; display:grid; place-items:center; padding: 12px 0 6px; }
+    .scaled{ transform-origin:center; will-change:transform; }
 
     .figure{
       position: relative;
@@ -77,17 +66,11 @@
       aspect-ratio: 1 / 1;
       border-radius: 18px;
       overflow: hidden;
-      background: #EAF2FF; /* pastelno modra */
+      background: #EAF2FF;
       border: 1px solid rgba(255,255,255,.14);
     }
-    .figure img{
-      width:100%;
-      height:100%;
-      object-fit: contain;
-      display:block;
-    }
+    .figure img{ width:100%; height:100%; object-fit:contain; display:block; }
 
-    /* ime v centru */
     .nameOverlay{
       position:absolute;
       inset:0;
@@ -100,17 +83,17 @@
       letter-spacing: 0.5px;
       color: #d13b3b;
       text-shadow: 0 1px 0 rgba(255,255,255,.35);
-      font-size: 30px; /* osnova; potem se auto-fit prilagodi */
+      font-size: 30px;
       line-height: 1;
       white-space: nowrap;
       overflow: hidden;
     }
 
     .metaRow{
-      display:flex; flex-wrap: wrap; gap:10px;
-      align-items:center; justify-content: space-between;
+      display:flex; flex-wrap:wrap; gap:10px;
+      align-items:center; justify-content:space-between;
       border-top:1px solid rgba(255,255,255,.10);
-      padding-top: 10px;
+      padding-top:10px;
     }
     .pill{
       border:1px solid rgba(255,255,255,.16);
@@ -146,14 +129,14 @@
         <div class="twoCol">
           <div>
             <label>Velikost (mm): <span id="sizeLabel">30</span></label>
-            <input id="sizeRange" type="range" min="30" max="60" step="1" value="30" />
-            <div class="hint">Premakni drsnik (30–60 mm).</div>
+            <input id="sizeRange" type="range" />
+            <div class="hint">Drsnik je zaklenjen na 30–60 mm.</div>
           </div>
 
           <div>
-            <label>Cena (€)</label>
-            <input id="priceBox" type="text" value="8.00 €" readonly />
-            <div class="hint">Cena je avtomatska.</div>
+            <label>Cena (€) (samodejno)</label>
+            <input id="priceBox" type="text" readonly />
+            <div class="hint">30mm = 8€ … 60mm = 11€</div>
           </div>
         </div>
 
@@ -163,8 +146,7 @@
         </div>
 
         <div class="pill" style="opacity:.9;">
-          Slike daj v mapo: <b>/images</b><br/>
-          Imena datotek: <b>p1.png, p2.png, p3.png</b>
+          Slike v repo: <b>/images/p1.png</b>, <b>/images/p2.png</b>, <b>/images/p3.png</b>
         </div>
       </div>
     </section>
@@ -193,28 +175,29 @@
 </div>
 
 <script>
-  // ------------- NASTAVITVE CENE -------------
+  // ====== HARD LIMITI ======
   const MIN_MM = 30;
   const MAX_MM = 60;
-  const MIN_PRICE = 8.00;   // 30mm
-  const MAX_PRICE = 11.00;  // 60mm
+  const MIN_PRICE = 8.00;
+  const MAX_PRICE = 11.00;
 
-  // Linearni izračun: 30->8, 60->11
+  function clamp(n, min, max){
+    return Math.max(min, Math.min(max, n));
+  }
+
   function calcPrice(sizeMm){
-    const s = Number(sizeMm);
-    if (!Number.isFinite(s)) return MIN_PRICE;
+    const s = clamp(Number(sizeMm), MIN_MM, MAX_MM);
     const t = (s - MIN_MM) / (MAX_MM - MIN_MM); // 0..1
     const price = MIN_PRICE + t * (MAX_PRICE - MIN_PRICE);
-    // zaokroži na 0.01
     return Math.round(price * 100) / 100;
   }
 
   function euro(n){
+    // prikaz npr. "8,00 €"
     return new Intl.NumberFormat("sl-SI", { style:"currency", currency:"EUR" }).format(n);
   }
 
-  // ------------- PRODUKTI -------------
-  // (Slike v repo: /images/p1.png, /images/p2.png, /images/p3.png)
+  // ====== PRODUKTI ======
   const products = [
     { id:"p1", label:"Oblak",          image:"images/p1.png", aspect:"1/1" },
     { id:"p2", label:"Nogometna žoga", image:"images/p2.png", aspect:"1/1" },
@@ -244,7 +227,7 @@
 
   function renderSelect(){
     els.select.innerHTML = "";
-    for(const p of products){
+    for (const p of products){
       const opt = document.createElement("option");
       opt.value = p.id;
       opt.textContent = p.label;
@@ -257,85 +240,88 @@
     return products.find(p => p.id === currentId) || products[0];
   }
 
-  // Avtomatsko prilagodi font, da tekst ostane v okvirju
   function fitTextToBox(el, maxWidthPx, maxFontPx, minFontPx){
     let size = maxFontPx;
     el.style.fontSize = size + "px";
-    el.style.whiteSpace = "nowrap";
-    el.style.overflow = "hidden";
     while (el.scrollWidth > maxWidthPx && size > minFontPx){
       size -= 1;
       el.style.fontSize = size + "px";
     }
   }
 
-  // Scale preview glede na velikost (da se “produkt” poveča)
-  // 30mm -> 0.85, 60mm -> 1.25
   function scaleFromSize(sizeMm){
-    const s = Number(sizeMm);
+    const s = clamp(Number(sizeMm), MIN_MM, MAX_MM);
     const t = (s - MIN_MM) / (MAX_MM - MIN_MM);
-    const clamped = Math.max(0, Math.min(1, t));
-    return 0.85 + clamped * (1.25 - 0.85);
+    // 30mm -> 0.85, 60mm -> 1.25
+    return 0.85 + t * (1.25 - 0.85);
+  }
+
+  function readSize(){
+    // 100% prisilimo v range 30–60
+    const raw = Number(els.sizeRange.value);
+    const clamped = clamp(raw, MIN_MM, MAX_MM);
+    if (String(clamped) !== String(els.sizeRange.value)) {
+      els.sizeRange.value = String(clamped);
+    }
+    return clamped;
   }
 
   function render(){
     const p = getCurrent();
-    const sizeMm = Number(els.sizeRange.value);
 
-    // slika + razmerje
+    // slika + aspect
     els.img.src = p.image;
     els.figure.style.aspectRatio = p.aspect || "1/1";
     els.modelPill.textContent = `Model: ${p.label}`;
 
-    // velikost label
-    els.sizeLabel.textContent = sizeMm.toString();
+    // size
+    const sizeMm = readSize();
+    els.sizeLabel.textContent = String(sizeMm);
 
-    // cena (read-only)
+    // price
     const price = calcPrice(sizeMm);
     els.priceBox.value = euro(price);
     els.pricePill.textContent = `Cena: ${euro(price)}`;
 
-    // ime
-    const name = (els.name.value || "").trim();
-    const shown = name ? name : "VPIŠI IME";
-    els.overlay.textContent = shown;
+    // name overlay
+    const name = (els.name.value || "").trim().toUpperCase();
+    els.name.value = name; // keep uppercase
+    els.overlay.textContent = name ? name : "VPIŠI IME";
     els.previewNamePill.textContent = name ? `Ime: ${name}` : "Ime: —";
 
-    // preview size + price
+    // preview pills
     els.previewSizePill.textContent = `Velikost: ${sizeMm} mm`;
     els.previewPricePill.textContent = `Cena: ${euro(price)}`;
 
-    // scale celoten preview (slika + ime)
-    const scale = scaleFromSize(sizeMm);
-    els.scaled.style.transform = `scale(${scale})`;
+    // scale whole preview
+    els.scaled.style.transform = `scale(${scaleFromSize(sizeMm)})`;
 
-    // fit font (78% širine figure)
+    // fit text to 78% width
     const boxWidth = els.figure.clientWidth * 0.78;
     fitTextToBox(els.overlay, boxWidth, 34, 16);
   }
 
+  // ====== EVENTS ======
   els.select.addEventListener("change", () => {
     currentId = els.select.value;
     render();
   });
 
-  els.name.addEventListener("input", () => {
-    // avtomatsko velike črke
-    const start = els.name.selectionStart;
-    const end = els.name.selectionEnd;
-    els.name.value = els.name.value.toUpperCase();
-    els.name.setSelectionRange(start, end);
-    render();
-  });
+  els.name.addEventListener("input", render);
 
   els.sizeRange.addEventListener("input", render);
+
   window.addEventListener("resize", render);
 
-  // init
+  // ====== INIT ======
   renderSelect();
-  els.sizeRange.min = MIN_MM;
-  els.sizeRange.max = MAX_MM;
-  els.sizeRange.value = MIN_MM;
+
+  // nastavi drsnik hard
+  els.sizeRange.min = String(MIN_MM);
+  els.sizeRange.max = String(MAX_MM);
+  els.sizeRange.step = "1";
+  els.sizeRange.value = String(MIN_MM);
+
   render();
 </script>
 </body>
