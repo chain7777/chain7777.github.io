@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NFC obesek – vpis imena</title>
+  <title>NFC obesek – ime + velikost + cena</title>
   <style>
     :root { --bg:#0b1020; --panel:#121a33; --text:#e9eeff; --muted:#aab3d6; --border:#263056; }
     * { box-sizing: border-box; }
@@ -39,7 +39,11 @@
       padding:10px 12px;
       outline:none;
     }
+    input[type="range"]{ padding: 0; height: 38px; }
     .row{ display:grid; gap:10px; }
+
+    .twoCol{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width: 420px){ .twoCol{ grid-template-columns:1fr; } }
 
     /* PREVIEW */
     .preview{ border-radius:18px; overflow:hidden; border:1px solid var(--border); min-height:360px; }
@@ -58,6 +62,12 @@
       display:grid;
       place-items:center;
       padding: 12px 0 6px;
+    }
+
+    /* SCALE wrapper */
+    .scaled{
+      transform-origin: center;
+      will-change: transform;
     }
 
     .figure{
@@ -110,12 +120,13 @@
       font-size:12px;
       color: rgba(255,255,255,.88);
     }
+    .hint{ font-size:12px; color: var(--muted); }
   </style>
 </head>
 <body>
 <header>
   <h1>NFC obesek – vpis imena</h1>
-  <p>Stranka izbere model, vpiše ime. Cena je fiksna: <b>8 €</b>. Desno je live preview. Ime se avtomatsko pomanjša, če je predolgo.</p>
+  <p>Velikost: <b>30–60 mm</b>. Cena se izračuna samodejno: <b>30mm = 8€</b>, <b>60mm = 11€</b>. Stranka cene ne more spreminjati.</p>
 </header>
 
 <div class="wrap">
@@ -132,9 +143,23 @@
           <input id="nameInput" type="text" placeholder="npr. MARK" maxlength="18" />
         </div>
 
+        <div class="twoCol">
+          <div>
+            <label>Velikost (mm): <span id="sizeLabel">30</span></label>
+            <input id="sizeRange" type="range" min="30" max="60" step="1" value="30" />
+            <div class="hint">Premakni drsnik (30–60 mm).</div>
+          </div>
+
+          <div>
+            <label>Cena (€)</label>
+            <input id="priceBox" type="text" value="8.00 €" readonly />
+            <div class="hint">Cena je avtomatska.</div>
+          </div>
+        </div>
+
         <div class="metaRow">
-          <span class="pill">Cena: <b>8 €</b></span>
           <span class="pill" id="modelPill">Model: —</span>
+          <span class="pill" id="pricePill">Cena: —</span>
         </div>
 
         <div class="pill" style="opacity:.9;">
@@ -149,15 +174,18 @@
         <span class="chip">● Live preview</span>
 
         <div class="stage">
-          <div id="figure" class="figure">
-            <img id="productImg" alt="Produkt" />
-            <div id="nameOverlay" class="nameOverlay">VPIŠI IME</div>
+          <div id="scaled" class="scaled">
+            <div id="figure" class="figure">
+              <img id="productImg" alt="Produkt" />
+              <div id="nameOverlay" class="nameOverlay">VPIŠI IME</div>
+            </div>
           </div>
         </div>
 
         <div class="metaRow">
           <span class="pill" id="previewNamePill">Ime: —</span>
-          <span class="pill">Cena: <b>8 €</b></span>
+          <span class="pill" id="previewSizePill">Velikost: —</span>
+          <span class="pill" id="previewPricePill">Cena: —</span>
         </div>
       </div>
     </section>
@@ -165,22 +193,51 @@
 </div>
 
 <script>
-  // Nastavi poti do slik v tvojem GitHub repo:
-  // /images/p1.png, /images/p2.png, /images/p3.png
+  // ------------- NASTAVITVE CENE -------------
+  const MIN_MM = 30;
+  const MAX_MM = 60;
+  const MIN_PRICE = 8.00;   // 30mm
+  const MAX_PRICE = 11.00;  // 60mm
+
+  // Linearni izračun: 30->8, 60->11
+  function calcPrice(sizeMm){
+    const s = Number(sizeMm);
+    if (!Number.isFinite(s)) return MIN_PRICE;
+    const t = (s - MIN_MM) / (MAX_MM - MIN_MM); // 0..1
+    const price = MIN_PRICE + t * (MAX_PRICE - MIN_PRICE);
+    // zaokroži na 0.01
+    return Math.round(price * 100) / 100;
+  }
+
+  function euro(n){
+    return new Intl.NumberFormat("sl-SI", { style:"currency", currency:"EUR" }).format(n);
+  }
+
+  // ------------- PRODUKTI -------------
+  // (Slike v repo: /images/p1.png, /images/p2.png, /images/p3.png)
   const products = [
-    { id:"p1", label:"Oblak",           image:"images/p1.png", aspect:"1/1" },
-    { id:"p2", label:"Nogometna žoga",  image:"images/p2.png", aspect:"1/1" },
-    { id:"p3", label:"Tenis lopar",     image:"images/p3.png", aspect:"3/4" },
+    { id:"p1", label:"Oblak",          image:"images/p1.png", aspect:"1/1" },
+    { id:"p2", label:"Nogometna žoga", image:"images/p2.png", aspect:"1/1" },
+    { id:"p3", label:"Tenis lopar",    image:"images/p3.png", aspect:"3/4" },
   ];
 
   const els = {
     select: document.getElementById("productSelect"),
     name: document.getElementById("nameInput"),
+    sizeRange: document.getElementById("sizeRange"),
+    sizeLabel: document.getElementById("sizeLabel"),
+    priceBox: document.getElementById("priceBox"),
+
     img: document.getElementById("productImg"),
     overlay: document.getElementById("nameOverlay"),
     figure: document.getElementById("figure"),
+    scaled: document.getElementById("scaled"),
+
     modelPill: document.getElementById("modelPill"),
+    pricePill: document.getElementById("pricePill"),
     previewNamePill: document.getElementById("previewNamePill"),
+    previewSizePill: document.getElementById("previewSizePill"),
+    previewPricePill: document.getElementById("previewPricePill"),
   };
 
   let currentId = products[0].id;
@@ -206,20 +263,37 @@
     el.style.fontSize = size + "px";
     el.style.whiteSpace = "nowrap";
     el.style.overflow = "hidden";
-
     while (el.scrollWidth > maxWidthPx && size > minFontPx){
       size -= 1;
       el.style.fontSize = size + "px";
     }
   }
 
+  // Scale preview glede na velikost (da se “produkt” poveča)
+  // 30mm -> 0.85, 60mm -> 1.25
+  function scaleFromSize(sizeMm){
+    const s = Number(sizeMm);
+    const t = (s - MIN_MM) / (MAX_MM - MIN_MM);
+    const clamped = Math.max(0, Math.min(1, t));
+    return 0.85 + clamped * (1.25 - 0.85);
+  }
+
   function render(){
     const p = getCurrent();
+    const sizeMm = Number(els.sizeRange.value);
 
     // slika + razmerje
     els.img.src = p.image;
     els.figure.style.aspectRatio = p.aspect || "1/1";
     els.modelPill.textContent = `Model: ${p.label}`;
+
+    // velikost label
+    els.sizeLabel.textContent = sizeMm.toString();
+
+    // cena (read-only)
+    const price = calcPrice(sizeMm);
+    els.priceBox.value = euro(price);
+    els.pricePill.textContent = `Cena: ${euro(price)}`;
 
     // ime
     const name = (els.name.value || "").trim();
@@ -227,10 +301,15 @@
     els.overlay.textContent = shown;
     els.previewNamePill.textContent = name ? `Ime: ${name}` : "Ime: —";
 
-    // Auto-uppercase (lahko izbrišeš, če nočeš)
-    // -> to delamo v input handlerju, da se ne resetira kurzor tu.
+    // preview size + price
+    els.previewSizePill.textContent = `Velikost: ${sizeMm} mm`;
+    els.previewPricePill.textContent = `Cena: ${euro(price)}`;
 
-    // fit font (78% širine slike, da imamo malo roba)
+    // scale celoten preview (slika + ime)
+    const scale = scaleFromSize(sizeMm);
+    els.scaled.style.transform = `scale(${scale})`;
+
+    // fit font (78% širine figure)
     const boxWidth = els.figure.clientWidth * 0.78;
     fitTextToBox(els.overlay, boxWidth, 34, 16);
   }
@@ -245,15 +324,18 @@
     const start = els.name.selectionStart;
     const end = els.name.selectionEnd;
     els.name.value = els.name.value.toUpperCase();
-    // poskusi ohraniti pozicijo kurzorja
     els.name.setSelectionRange(start, end);
-
     render();
   });
 
+  els.sizeRange.addEventListener("input", render);
   window.addEventListener("resize", render);
 
+  // init
   renderSelect();
+  els.sizeRange.min = MIN_MM;
+  els.sizeRange.max = MAX_MM;
+  els.sizeRange.value = MIN_MM;
   render();
 </script>
 </body>
